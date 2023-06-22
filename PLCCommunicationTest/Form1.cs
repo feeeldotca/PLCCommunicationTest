@@ -15,27 +15,51 @@ namespace PLCCommunicationTest
     public partial class Form1 : Form
     {
         // Use Modbus Slave to test
-
+         TcpClient tcpClient = new TcpClient();
+        Modbus.Device.ModbusIpMaster master = null;
         public Form1()
         {
             InitializeComponent();
 
+
             // continiounsly get value from registers
-
-            TcpClient tcpClient = new TcpClient();
             tcpClient.Connect("127.0.0.1", 502);
-
-            Modbus.Device.ModbusIpMaster master = Modbus.Device.ModbusIpMaster.CreateIp(tcpClient);
+            Control.CheckForIllegalCrossThreadCalls = false;
+            master = Modbus.Device.ModbusIpMaster.CreateIp(tcpClient);
+           
             Task.Run(async () =>
             {
                 while (true) {
                     await Task.Delay(500);
                     // read slave 1, address 0, 1 byte data a time continously
-                    ushort[] values = master.ReadInputRegisters(1, 0, 1); 
-                    textBox1.Text = values[0].ToString(); 
+                    ushort[] values = master.ReadHoldingRegisters(1, 0, 1); 
+                    try {
+                         textBox1.Text = values[0].ToString(); // any faults
+                    }
+                    catch( Exception ex)
+                    {
+
+                    }
+                    
                 }
             });
+           
+           
+
             
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ushort value = ushort.Parse(textBox2.Text);
+                master.WriteSingleRegister(1, value);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }
