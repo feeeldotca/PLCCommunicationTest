@@ -38,7 +38,7 @@ namespace PLCCommunicationTest
                     }
                     catch( Exception ex)
                     {
-
+                        MessageBox.Show("Please check your value: " + ex);
                     }
                     
                 }
@@ -53,12 +53,14 @@ namespace PLCCommunicationTest
         {
             try
             {
+                // get value from UI
                 ushort value = ushort.Parse(textBox2.Text);
+                // write value to single register
                 master.WriteSingleRegister(1, value);
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show("Please check your value: " + ex);
             }
         }
     }
